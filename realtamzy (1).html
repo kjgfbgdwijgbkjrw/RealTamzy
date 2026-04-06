@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REALTAMZY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C8A84B;
+    --gold-light: #E8C96D;
+    --cream: #F5EDD6;
+    --black: #0A0A0A;
+    --dark: #111111;
+    --mid: #1C1C1C;
+    --warm-gray: #2A2520;
+    --red-accent: #D4421A;
+    --text-muted: #7A7060;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, opacity 0.15s;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--gold);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.35s ease, opacity 0.3s;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9000;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 48px;
+    background: linear-gradient(to bottom, rgba(10,10,10,0.95) 0%, transparent 100%);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-live {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--cream);
+    text-decoration: none;
+    background: rgba(200,168,75,0.1);
+    border: 1px solid rgba(200,168,75,0.3);
+    padding: 8px 16px;
+    transition: all 0.2s;
+  }
+  .nav-live:hover { background: rgba(200,168,75,0.2); border-color: var(--gold); }
+  .live-dot {
+    width: 7px; height: 7px;
+    background: var(--red-accent);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 0 48px;
+    gap: 0;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 70% 50%, rgba(200,168,75,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(212,66,26,0.04) 0%, transparent 50%);
+  }
+
+  .hero-grid-lines {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(200,168,75,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(200,168,75,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse 70% 70% at 60% 50%, black 20%, transparent 70%);
+  }
+
+  .hero-left {
+    position: relative;
+    z-index: 2;
+    padding-top: 120px;
+    padding-bottom: 80px;
+  }
+
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 10vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 0;
+  }
+  .hero-name span {
+    display: block;
+    color: var(--gold);
+    -webkit-text-stroke: 2px var(--gold);
+    color: transparent;
+    font-size: clamp(60px, 7vw, 100px);
+  }
+
+  .hero-sub {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 360px;
+    line-height: 1.7;
+    margin-top: 28px;
+    margin-bottom: 44px;
+  }
+  .hero-sub strong { color: var(--cream); font-weight: 500; }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-secondary {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 14px 28px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-2px); }
+
+  .hero-right {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 100vh;
+    padding-top: 80px;
+  }
+
+  .hero-image-wrap {
+    position: relative;
+    width: 340px;
+  }
+
+  .hero-image-frame {
+    position: absolute;
+    inset: -12px -12px 12px 12px;
+    border: 1px solid rgba(200,168,75,0.3);
+    pointer-events: none;
+  }
+
+  .hero-img {
+    width: 100%;
+    display: block;
+    filter: contrast(1.05) saturate(0.9);
+    mix-blend-mode: normal;
+    object-fit: cover;
+    object-position: top;
+    max-height: 75vh;
+  }
+
+  .hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 50%, var(--black) 100%);
+    pointer-events: none;
+  }
+
+  .hero-stat-strip {
+    position: absolute;
+    bottom: 0;
+    left: -20px;
+    right: -20px;
+    display: flex;
+    gap: 0;
+  }
+
+  .stat-item {
+    flex: 1;
+    padding: 18px 20px;
+    background: var(--mid);
+    border-top: 2px solid var(--gold);
+    text-align: center;
+  }
+  .stat-item + .stat-item {
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--gold);
+    line-height: 1;
+    display: block;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 4px;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    z-index: 2;
+  }
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--text-muted);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(0.4); transform-origin: left; }
+  }
+
+  /* SECTION SHARED */
+  section { position: relative; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(200,168,75,0.4), transparent);
+    max-width: 120px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 1;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    margin-bottom: 24px;
+  }
+
+  /* STORY SECTION */
+  .story {
+    padding: 120px 48px;
+    background: var(--dark);
+    overflow: hidden;
+  }
+
+  .story-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .story-left {}
+
+  .story-text {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: #9A9080;
+    margin-bottom: 20px;
+  }
+  .story-text strong { color: var(--cream); font-weight: 500; }
+  .story-text .highlight { color: var(--gold); font-weight: 500; }
+
+  .story-right {
+    padding-top: 60px;
+  }
+
+  .kanye-vibes {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .vibe-pill {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .vibe-pill.gold { border-color: var(--gold); color: var(--gold); }
+  .vibe-pill.cream { border-color: rgba(245,237,214,0.25); color: var(--cream); }
+
+  .bio-card {
+    background: var(--warm-gray);
+    padding: 32px;
+    border-left: 3px solid var(--gold);
+    margin-bottom: 28px;
+  }
+
+  .bio-card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .bio-card-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+  }
+  .bio-card-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* HIGHLIGHT SECTION */
+  .highlight-section {
+    padding: 120px 48px;
+    background: var(--black);
+    overflow: hidden;
+  }
+
+  .highlight-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .highlight-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .highlight-main {
+    background: var(--warm-gray);
+    padding: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .highlight-main::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    right: 40px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 200px;
+    color: rgba(200,168,75,0.06);
+    line-height: 1;
+  }
+
+  .highlight-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--red-accent);
+    color: white;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    margin-bottom: 24px;
+  }
+
+  .highlight-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 1.05;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+  .highlight-title span { color: var(--gold); }
+
+  .highlight-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 400px;
+  }
+  .highlight-desc strong { color: var(--cream); }
+
+  .viewer-count {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .viewer-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .viewer-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .highlight-side {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .highlight-card {
+    flex: 1;
+    background: var(--mid);
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .highlight-card:hover { background: var(--warm-gray); }
+
+  .hcard-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .hcard-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .hcard-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* NETWORK */
+  .network-section {
+    padding: 120px 48px;
+    background: var(--dark);
+  }
+
+  .network-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .network-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .creator-card {
+    background: var(--mid);
+    padding: 40px 32px;
+    text-align: center;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .creator-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+  }
+  .creator-card:hover { background: var(--warm-gray); }
+  .creator-card:hover::after { transform: scaleX(1); }
+
+  .creator-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--warm-gray);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    color: var(--gold);
+    border: 1px solid rgba(200,168,75,0.3);
+  }
+
+  .creator-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+
+  .creator-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+
+  .creator-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* DREAMS / GOALS */
+  .dreams-section {
+    padding: 120px 48px;
+    background: var(--black);
+    overflow: hidden;
+  }
+
+  .dreams-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .dreams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .dream-card {
+    padding: 64px 56px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s;
+  }
+
+  .dream-card:first-child {
+    background: var(--warm-gray);
+  }
+
+  .dream-card:last-child {
+    background: var(--gold);
+  }
+
+  .dream-card:last-child .dream-number,
+  .dream-card:last-child .dream-title,
+  .dream-card:last-child .dream-desc { color: var(--black); }
+
+  .dream-card:last-child .dream-number { opacity: 0.2; }
+
+  .dream-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px;
+    line-height: 1;
+    color: rgba(200,168,75,0.08);
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    pointer-events: none;
+  }
+
+  .dream-icon {
+    font-size: 36px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .dream-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    letter-spacing: 0.03em;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .dream-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    font-weight: 300;
+    max-width: 360px;
+    position: relative;
+  }
+
+  /* PLATFORMS */
+  .platforms-section {
+    padding: 80px 48px;
+    background: var(--mid);
+    border-top: 1px solid rgba(200,168,75,0.15);
+    border-bottom: 1px solid rgba(200,168,75,0.15);
+  }
+
+  .platforms-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .platforms-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .platform-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .platform-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.25s;
+    border: 1px solid;
+  }
+
+  .platform-btn.twitch {
+    color: #9147FF;
+    border-color: rgba(145,71,255,0.35);
+    background: rgba(145,71,255,0.05);
+  }
+  .platform-btn.twitch:hover {
+    background: rgba(145,71,255,0.15);
+    border-color: #9147FF;
+    transform: translateY(-2px);
+  }
+
+  .platform-btn.youtube {
+    color: #FF0000;
+    border-color: rgba(255,0,0,0.3);
+    background: rgba(255,0,0,0.04);
+  }
+  .platform-btn.youtube:hover {
+    background: rgba(255,0,0,0.12);
+    border-color: #FF0000;
+    transform: translateY(-2px);
+  }
+
+  .platform-btn.tiktok {
+    color: var(--cream);
+    border-color: rgba(245,237,214,0.2);
+    background: rgba(245,237,214,0.03);
+  }
+  .platform-btn.tiktok:hover {
+    background: rgba(245,237,214,0.08);
+    border-color: var(--cream);
+    transform: translateY(-2px);
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 60px 48px;
+    background: var(--black);
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+  }
+
+  .footer-copy {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    text-align: right;
+    line-height: 1.7;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    overflow: hidden;
+    padding: 20px 0;
+    background: var(--gold);
+    position: relative;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 0;
+    animation: marquee 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--black);
+    padding: 0 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .marquee-dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* ANIMATIONS */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 0 24px; }
+    .hero-right { display: none; }
+    .hero-left { padding-top: 140px; }
+    .story, .highlight-section, .network-section, .dreams-section { padding: 80px 24px; }
+    .story-inner { grid-template-columns: 1fr; gap: 40px; }
+    .highlight-grid { grid-template-columns: 1fr; }
+    .network-grid { grid-template-columns: 1fr; }
+    .dreams-grid { grid-template-columns: 1fr; }
+    .platforms-section { padding: 60px 24px; }
+    footer { padding: 40px 24px; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">TAMZY</a>
+  <ul class="nav-links">
+    <li><a href="#story">Story</a></li>
+    <li><a href="#highlights">Highlights</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#goals">Goals</a></li>
+  </ul>
+  <a href="https://twitch.tv/realtamzy" target="_blank" class="nav-live">
+    <span class="live-dot"></span>
+    Watch Live
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-left">
+    <div class="hero-tag">Twitch Streamer · Content Creator</div>
+    <h1 class="hero-name">
+      REAL
+      <span>TAMZY</span>
+    </h1>
+    <p class="hero-sub">
+      Born from a <strong>love of Kanye</strong>. Built by consistency.
+      Reacting to an entire discography wasn't just content — it was a calling.
+      <span class="highlight" style="color:var(--gold)">Welcome to the archive.</span>
+    </p>
+    <div class="hero-ctas">
+      <a href="https://twitch.tv/realtamzy" target="_blank" class="btn-primary">
+        ▶ Watch on Twitch
+      </a>
+      <a href="https://youtube.com/@realtamzy" target="_blank" class="btn-secondary">
+        YouTube Reactions
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-image-wrap">
+      <div class="hero-image-frame"></div>
+      <img src="/mnt/user-data/uploads/t.png" alt="Tamzy" class="hero-img">
+      <div class="hero-image-overlay"></div>
+      <div class="hero-stat-strip">
+        <div class="stat-item">
+          <span class="stat-number">200</span>
+          <span class="stat-label">Peak Live</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">10+</span>
+          <span class="stat-label">Albums Reacted</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">24H</span>
+          <span class="stat-label">Iconic Stream</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span class="scroll-line"></span>
+    Scroll
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <!-- duplicated for seamless loop -->
+    <span class="marquee-item">Graduation <span class="marquee-dot"></span></span>
+    <span class="marquee-item">College Dropout <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Donda Era <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bully Reaction <span class="marquee-dot"></span></span>
+    <span class="marquee-item">24HR Stream <span class="marquee-dot"></span></span>
+    <span class="marquee-item">NYC 2026 <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Loyal Fanbase <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Twitch Live <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Graduation <span class="marquee-dot"></span></span>
+    <span class="marquee-item">College Dropout <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Donda Era <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Bully Reaction <span class="marquee-dot"></span></span>
+    <span class="marquee-item">24HR Stream <span class="marquee-dot"></span></span>
+    <span class="marquee-item">NYC 2026 <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Loyal Fanbase <span class="marquee-dot"></span></span>
+    <span class="marquee-item">Twitch Live <span class="marquee-dot"></span></span>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="story-inner">
+    <div class="story-left fade-in">
+      <div class="section-label">The Origin</div>
+      <h2 class="section-title">WHO IS<br>TAMZY</h2>
+      <p class="story-text">
+        It started with a simple idea: <strong>react to every Kanye West album</strong>. What began as a passion project became the fuel that kept Tamzy streaming — building a loyal fanbase of Kanye fans who showed up for every drop, every reaction, every moment.
+      </p>
+      <p class="story-text">
+        Born <span class="highlight">9th November 2005</span>, Tamzy brings raw energy and genuine love to every stream. Whether it's breaking down the layers of <strong>Late Registration</strong> or going bar-for-bar on <strong>Graduation</strong>, the authenticity is what keeps people coming back.
+      </p>
+      <p class="story-text">
+        Before the Kanye era, there was FIFA — hours of it — which led to connections with niche football content creators. That crossover audience adds a unique dimension to the Tamzy universe. Short-form clips on TikTok and Reels keep things alive between streams, mixing Kanye-coded humour with everyday funny moments.
+      </p>
+    </div>
+    <div class="story-right fade-in">
+      <div class="kanye-vibes">
+        <span class="vibe-pill gold">🎓 Graduation</span>
+        <span class="vibe-pill gold">🎤 College Dropout</span>
+        <span class="vibe-pill cream">Late Registration</span>
+        <span class="vibe-pill cream">Donda</span>
+        <span class="vibe-pill cream">Bully</span>
+        <span class="vibe-pill cream">FIFA Roots</span>
+      </div>
+      <div class="bio-card">
+        <div class="bio-card-label">Date of Birth</div>
+        <div class="bio-card-value">09.11.2005</div>
+        <div class="bio-card-sub">20 years old</div>
+      </div>
+      <div class="bio-card">
+        <div class="bio-card-label">Height</div>
+        <div class="bio-card-value">5'11"</div>
+        <div class="bio-card-sub">Standing tall, literally</div>
+      </div>
+      <div class="bio-card">
+        <div class="bio-card-label">Favourite Ye Vibe</div>
+        <div class="bio-card-value">Graduation + CD</div>
+        <div class="bio-card-sub">The soul era runs deep</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<section class="highlight-section" id="highlights">
+  <div class="highlight-inner">
+    <div class="fade-in">
+      <div class="section-label">Defining Moments</div>
+      <h2 class="section-title">HIGHLIGHTS</h2>
+    </div>
+    <div class="highlight-grid fade-in">
+      <div class="highlight-main">
+        <div class="highlight-badge">
+          <span class="live-dot"></span>
+          Biggest Moment
+        </div>
+        <div class="highlight-title">BULLY<br><span>REACTION</span><br>STREAM</div>
+        <p class="highlight-desc">
+          When Kanye dropped <strong>Bully</strong>, Tamzy was ready. The live reaction stream pulled in a community of fans glued to every track — genuine emotion, zero filter, real reactions as the album unfolded for the first time.
+        </p>
+        <div class="viewer-count">
+          <div class="viewer-number">200</div>
+          <div class="viewer-label">Live viewers<br>on Twitch</div>
+        </div>
+      </div>
+      <div class="highlight-side">
+        <div class="highlight-card">
+          <span class="hcard-icon">⏱</span>
+          <div class="hcard-title">The 24HR Stream</div>
+          <p class="hcard-desc">Recreating Kanye's legendary Donda-era marathon stream. A test of endurance and dedication that cemented Tamzy's place in the community.</p>
+        </div>
+        <div class="highlight-card">
+          <span class="hcard-icon">📀</span>
+          <div class="hcard-title">Full Discography Project</div>
+          <p class="hcard-desc">Not one album. Not five. The entire Kanye discography — reacted to and archived on YouTube for fans to revisit anytime.</p>
+        </div>
+        <div class="highlight-card">
+          <span class="hcard-icon">📱</span>
+          <div class="hcard-title">Short Form Clips</div>
+          <p class="hcard-desc">Funny moments, Kanye memes, and viral clips across TikTok and Reels. The content never stops, the algorithm never wins.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NETWORK -->
+<section class="network-section" id="network">
+  <div class="network-inner">
+    <div class="fade-in">
+      <div class="section-label">The Circle</div>
+      <h2 class="section-title">CONNECTED<br>CREATORS</h2>
+    </div>
+    <div class="network-grid fade-in">
+      <div class="creator-card">
+        <div class="creator-avatar">A</div>
+        <div class="creator-name">auger96</div>
+        <div class="creator-tag">Kanye Creator</div>
+        <p class="creator-desc">A fellow traveller in the Kanye content space. Built a connection through shared passion for dissecting Ye's catalogue and community building.</p>
+      </div>
+      <div class="creator-card">
+        <div class="creator-avatar">V</div>
+        <div class="creator-name">vexbolts</div>
+        <div class="creator-tag">Niche Creator</div>
+        <p class="creator-desc">Part of the extended network born from FIFA days. A niche creator whose lane overlaps with Tamzy's earlier football content roots.</p>
+      </div>
+      <div class="creator-card">
+        <div class="creator-avatar">L</div>
+        <div class="creator-name">la4awale</div>
+        <div class="creator-tag">FIFA / Niche</div>
+        <p class="creator-desc">Another connection forged on the pitch. FIFA brought them together, but the content friendship runs beyond any game.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GOALS / DREAMS -->
+<section class="dreams-section" id="goals">
+  <div class="dreams-inner">
+    <div class="fade-in">
+      <div class="section-label">What's Next</div>
+      <h2 class="section-title">THE VISION</h2>
+    </div>
+    <div class="dreams-grid fade-in">
+      <div class="dream-card">
+        <div class="dream-number">01</div>
+        <span class="dream-icon">🗽</span>
+        <div class="dream-title">NYC<br>2026</div>
+        <p class="dream-desc">
+          The longest running dream: fly to New York City and film content on the streets. From Manhattan to Brooklyn — capturing the energy that's been on the vision board for years. 2026 is the year it happens.
+        </p>
+      </div>
+      <div class="dream-card">
+        <div class="dream-number" style="color:rgba(0,0,0,0.12)">02</div>
+        <span class="dream-icon">🌟</span>
+        <div class="dream-title">MEET<br>KANYE</div>
+        <p class="dream-desc">
+          The ultimate long-term goal. The whole journey — the reactions, the streams, the 24 hours, the Bully stream — all of it has been driven by a genuine admiration for one artist. One day, the story comes full circle.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORMS -->
+<div class="platforms-section">
+  <div class="platforms-inner">
+    <span class="platforms-label">Find Tamzy on</span>
+    <div class="platform-links">
+      <a href="https://twitch.tv/realtamzy" target="_blank" class="platform-btn twitch">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+        Twitch
+      </a>
+      <a href="https://youtube.com/@realtamzy" target="_blank" class="platform-btn youtube">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/></svg>
+        YouTube
+      </a>
+      <a href="https://tiktok.com/@realtamzy" target="_blank" class="platform-btn tiktok">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+        TikTok
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">REALTAMZY</div>
+    <div class="footer-copy">
+      Built for the fans. Driven by Ye.<br>
+      © 2026 realtamzy — All rights reserved
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function animateRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(2.5)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+      ring.style.opacity = '0.2';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.opacity = '0.5';
+    });
+  });
+
+  // Scroll fade-in
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
